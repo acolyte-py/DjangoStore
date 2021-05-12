@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from django.db import transaction
 from django.shortcuts import render
 from django.views.generic import DetailView, View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 
@@ -17,6 +17,7 @@ from .models import (
     LatestProducts,
     CartProduct,
     Customer,
+    Order,
 )
 from .mixins import CategoryDetailMixin, CartMixin
 from .form import OrderForm
@@ -191,3 +192,25 @@ class MakeOrderView(CartMixin, View):
             messages.add_message(request, messages.INFO, 'Спасибо за заказ!')
             return HttpResponseRedirect('/')
         return HttpResponseRedirect('/checkout/')
+
+
+class PayedOnlineOrderView(CartMixin, View):
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        customer = Customer.objects.get(user=request.user)
+        new_order = Order()
+        new_order.customer = customer
+        new_order.first_name = customer.user.first_name
+        new_order.last_name = customer.user.last_name
+        new_order.phone = customer.phone
+        new_order.address = customer.address
+        new_order.buying_type = Order.BUYING_TYPE_SELF
+        new_order.save()
+        self.cart.in_order = True
+        self.cart.save()
+        new_order.cart = self.cart
+        new_order.status = Order.STATUS_PAYED
+        new_order.save()
+        customer.orders.add(new_order)
+        return JsonResponse({'status': 'payed'})

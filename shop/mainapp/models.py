@@ -259,6 +259,7 @@ class Customer(models.Model):
     )
     orders = models.ManyToManyField(
         'Order',
+        blank=True,
         verbose_name='Заказы покупателя',
         related_name='related_customer'
     )
@@ -276,11 +277,13 @@ class Order(models.Model):
     STATUS_IN_PROGRESS = 'in_progress'
     STATUS_READY = 'is_ready'
     STATUS_COMPLETED = 'completed'
+    STATUS_PAYED = 'payed'
 
     BUYING_TYPE_SELF = 'self'
     BUYING_TYPE_DELIVERY = 'delivery'
 
     STATUS_CHOICES = (
+        (STATUS_PAYED, 'Заказ оплачен'),
         (STATUS_NEW, 'Новый заказ'),
         (STATUS_IN_PROGRESS, 'Заказ в обработке'),
         (STATUS_READY, 'Заказ готов'),
