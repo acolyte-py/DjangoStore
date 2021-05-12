@@ -1,4 +1,7 @@
 import stripe
+import os
+
+from dotenv import load_dotenv
 
 from django.db import transaction
 from django.shortcuts import render
@@ -18,6 +21,8 @@ from .models import (
 from .mixins import CategoryDetailMixin, CartMixin
 from .form import OrderForm
 from .utils import recalc_cart
+
+load_dotenv()
 
 
 class BaseView(CartMixin, View):
@@ -142,9 +147,7 @@ class CartView(CartMixin, View):
 class CheckoutView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        stripe.api_key = (
-            "sk_test_51IqIYKKExvO85LdijeBWRqhjmdMsWosQRJ8VPc1hci4ZUGLy90aUN3MCsCnERVwYpCdmjO2i9IqZRdrX2lJg8ZUz00dD4e8OP5"
-        )
+        stripe.api_key = os.getenv('KEY')
         intent = stripe.PaymentIntent.create(
             amount=int(self.cart.final_price * 100),
             currency='rub',
