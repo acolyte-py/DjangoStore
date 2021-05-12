@@ -34,12 +34,26 @@
 </table>
 <br>
 <h3 class="text-center mt-5 mb-5">Форма заказа</h3>
-<form action="{% url 'make_order' %}" method="POST">
-  {% csrf_token %}
-  {{ form|crispy }}
-  <input type="submit" class="btn btn-success btn-block mb-3" value="Оформить заказ">
-</form>
 
+<div class="row">
+  <div class="col-md-6">
+    <h3 class="text-center">Оформить заказ</h3>
+    <form action="{% url 'make_order' %}" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <input type="submit" class="btn btn-success btn-block mb-3" value="Оформить заказ">
+    </form>
+  </div>
+  <div class="col-md-6">
+    <h3 class="text-center">Онлайн покупка товаров</h3>
+    <form id="payment-form">
+      <div id="card-element">
+      </div>
+      <div id="card-errors" role="alert"></div>
+      <button id="submit" data-secret="{{ client_secret }}">Оплатить!</button>
+    </form>
+  </div>
+</div>
 
 
 {% endblock content %}

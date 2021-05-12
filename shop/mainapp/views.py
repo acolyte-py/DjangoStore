@@ -1,3 +1,5 @@
+import stripe
+
 from django.db import transaction
 from django.shortcuts import render
 from django.views.generic import DetailView, View
@@ -140,12 +142,23 @@ class CartView(CartMixin, View):
 class CheckoutView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
+        stripe.api_key = (
+            "sk_test_51IqIYKKExvO85LdijeBWRqhjmdMsWosQRJ8VPc1hci4ZUGLy90aUN3MCsCnERVwYpCdmjO2i9IqZRdrX2lJg8ZUz00dD4e8OP5"
+        )
+        intent = stripe.PaymentIntent.create(
+            amount=int(self.cart.final_price * 100),
+            currency='rub',
+            metadata={
+                'integration_check': 'accept_a_payment'
+            },
+        )
         categories = Category.object.get_categories_for_left_sidebar()
         form = OrderForm(request.POST or None)
         context = {
             'cart': self.cart,
             'categories': categories,
             'form': form,
+            'client_secret': intent.client_secret,
         }
         return render(request, 'checkout.html', context)
 
