@@ -15,7 +15,7 @@ from .views import (
 urlpatterns = [
     path('', BaseView.as_view(), name='base'),
     path(
-        'products/<str:ct_model>/<str:slug>/',
+        'products/<str:slug>/',
         ProductDetailView.as_view(),
         name='product_detail'
     ),
@@ -26,17 +26,17 @@ urlpatterns = [
     ),
     path('cart/', CartView.as_view(), name='cart'),
     path(
-        'add-to-cart/<str:ct_model>/<str:slug>/',
+        'add-to-cart/<str:slug>/',
         AddToCartView.as_view(),
         name='add_to_cart'
     ),
     path(
-        'delete-from-cart/<str:ct_model>/<str:slug>/',
+        'delete-from-cart/<str:slug>/',
         DeleteFromCartView.as_view(),
         name='delete_from_cart'
     ),
     path(
-        'change-qty/<str:ct_model>/<str:slug>/',
+        'change-qty/<str:slug>/',
         ChangeQTYView.as_view(),
         name='change_qty'
     ),
