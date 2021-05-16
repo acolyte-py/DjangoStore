@@ -97,7 +97,7 @@
                   <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>
                 </h4>
                 <h5>{{ product.price }} руб.</h5>
-                <a href="{% url 'add_to_cart' ct_model=product.get_model_name slug=product.slug %}">
+                <a href="{% url 'add_to_cart' slug=product.slug %}">
                   <button class="btn btn-secondary">Добавить в корзину</button>
                 </a>
               </div>

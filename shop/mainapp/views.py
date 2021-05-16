@@ -108,7 +108,7 @@ class ChangeQTYView(CartMixin, View):
 class CartView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        categories = Category.object.all()
+        categories = Category.objects.all()
         context = {
             'cart': self.cart,
             'categories': categories,
@@ -119,7 +119,7 @@ class CartView(CartMixin, View):
 class CheckoutView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        categories = Category.object.all()
+        categories = Category.objects.all()
         form = OrderForm(request.POST or None)
         context = {
             'cart': self.cart,

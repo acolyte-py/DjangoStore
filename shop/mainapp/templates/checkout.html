@@ -17,9 +17,9 @@
   <tbody>
     {% for item in cart.products.all %}
         <tr>
-          <th scope="row">{{ item.content_objects.title }}</th>
-          <td class="w-25"><img src="{{ item.content_objects.image.url }}" class="img-fluid"></td>
-          <td>{{ item.content_objects.price }} руб.</td>
+          <th scope="row">{{ item.product.title }}</th>
+          <td class="w-25"><img src="{{ item.product.image.url }}" class="img-fluid"></td>
+          <td>{{ item.product.price }} руб.</td>
           <td>{{ item.qty }}</td>
             <td>{{ item.final_price }} руб.</td>
         </tr>
