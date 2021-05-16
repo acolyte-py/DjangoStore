@@ -34,99 +34,12 @@
 </table>
 <br>
 <h3 class="text-center mt-5 mb-5">Форма заказа</h3>
+<form action="{% url 'make_order' %}" method="POST">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <input type="submit" class="btn btn-success btn-block mb-3" value="Оформить заказ">
+</form>
 
-<div class="row">
-  <div class="col-md-6">
-    <h3 class="text-center">Оформить заказ</h3>
-    <form action="{% url 'make_order' %}" method="POST">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <input type="submit" class="btn btn-success btn-block mb-3" value="Оформить заказ">
-    </form>
-  </div>
-  <div class="col-md-6">
-    <h3 class="text-center">Онлайн покупка товаров</h3>
-    <form id="payment-form" name="order">
-      <div id="card-element" class="mt-5 mb-5">
-      </div>
-      <div id="card-errors" role="alert"></div>
-      <button type="submit" data-username="{{ cart.owner.user.username }}" class="btn btn-primary btn-block" id="cart-button" data-secret="{{ client_secret }}">Pay</button>
-    </form>
-  </div>
-</div>
-
-<script>
-  var form = document.getElementById('payment-form');
-  var stripe = Stripe('sk_test_51IqIYKKExvO85LdijeBWRqhjmdMsWosQRJ8VPc1hci4ZUGLy90aUN3MCsCnERVwYpCdmjO2i9IqZRdrX2lJg8ZUz00dD4e8OP5');
-  var elements = stripe.elements();
-  var style = {
-    base: {
-        color: "#32325d",
-      }
-  };
-
-  var card = elements.create("card", { style: style });
-  card.mount("#card-element");
-  card.on('change', function(event) {
-    var displayError = document.getElementById('card-errors');
-    if (event.error) {
-        displayError.textContent = event.error.message;
-      } else {
-        displayError.textContent = '';
-      }
-    });
-  form.addEventListener('submit', function(ev) {
-    ev.preventDefault();
-    var clientSecret = document.getElementById('card-button')
-    stripe.confirmCardPayment(clientSecret.dataset.secret, {
-      payment_method: {
-        card: card,
-        billing_details: {
-          name: document.getElementById('card-button').dataset.username
-        }
-      }
-    }).then(function(result) {
-      if (result.error) {
-        // Show error to your customer (e.g., insufficient funds)
-        console.log(result.error.message);
-      } else {
-        // The payment has been processed!
-        if (result.paymentIntent.status === 'succeeded') {
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-            const csrftoken = getCookie('csrftoken');
-            var formData = new FormData(document.forms.order);
-
-            // добавить к пересылке ещё пару ключ - значение
-            formData.append("first_name", document.getElementById('card-button').dataset.username);
-            formData.append("csrfmiddlewaretoken", csrftoken)
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/payed-online-order/");
-            xhr.send(formData);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                  window.location.replace("http://127.0.0.1:8000");
-                  alert('Ваш заказ успешно оплачен! Менеджер с Вами свяжется')
-                }
-            }
-        }
-      }
-    });
-  });
-</script>
 
 
 {% endblock content %}

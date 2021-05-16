@@ -10,7 +10,6 @@ from .views import (
     ChangeQTYView,
     CheckoutView,
     MakeOrderView,
-    PayedOnlineOrderView,
 )
 
 urlpatterns = [
@@ -43,9 +42,4 @@ urlpatterns = [
     ),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('make-order/', MakeOrderView.as_view(), name='make_order'),
-    path(
-        'payed-online-order/',
-        PayedOnlineOrderView.as_view(),
-        name='payed_online_order'
-    ),
 ]
