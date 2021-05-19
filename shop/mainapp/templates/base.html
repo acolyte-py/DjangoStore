@@ -47,12 +47,12 @@
               <a class="nav-link text-light" href="{% url 'login' %}">Авторизация</a>
             </li>
             <li>
-              <a class="nav-link text-light" href="#">Регистрация</a>
+              <a class="nav-link text-light" href="{% url 'registration' %}">Регистрация</a>
             </li>
           {% endif %}
           <li class="nav-item">
             {% if request.user.is_authenticated %}<span class="navbar text text-light">Здравствуйте, <span class="badge badge-danger">
-              <a style="text-decoration: none; font-size:14px; color:white;" href="#">{{ request.user.username }}</a></span></span>
+              <a style="text-decoration: none; font-size:14px; color:white;" href="#">{{ request.user.username }}</a></span></span> | <a href="{% url 'logout' %}">Выйти</a>
             {% endif %}
           </li>
         </ul>
