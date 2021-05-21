@@ -10,6 +10,7 @@ from .models import (
     Category,
     CartProduct,
     Customer,
+    Order,
 )
 from .mixins import CartMixin
 from .form import OrderForm, LoginForm, RegistrationForm
@@ -226,3 +227,19 @@ class RegistrationView(CartMixin, View):
             login(request, user)
             return HttpResponseRedirect('/')
         return render(request, 'registration.html', context)
+
+
+class ProfileView(CartMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        customer = Customer.objects.get(user=request.user)
+        orders = Order.objects.filter(
+            customer=customer
+        ).order_by('-created_at')
+        categories = Category.objects.all()
+        context = {
+            'orders': orders,
+            'categories': categories,
+            'cart': self.cart,
+        }
+        return render(request, 'profile.html', context)
