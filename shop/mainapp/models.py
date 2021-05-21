@@ -21,6 +21,14 @@ class Category(models.Model):
             }
         )
 
+    def get_fields_for_filter_in_template(self):
+        return ProductFeatures.objects.filter(
+            category=self,
+            use_in_filter=True,
+        ).prefetch_related('category').value(
+            'feature_key', 'filter_measure', 'feature_name', 'filter_type'
+        )
+
 
 class Product(models.Model):
     category = models.ForeignKey(
@@ -52,6 +60,85 @@ class Product(models.Model):
                 'slug': self.slug
             }
         )
+
+
+class ProductFeatures(models.Model):
+    RADIO = 'radio'
+    CHECKBOX = 'checkbox'
+
+    FILTER_TYPE_CHOICES = (
+        (RADIO, 'Радиокнопка'),
+        (CHECKBOX, 'Чекбокс'),
+    )
+    feature_key = models.CharField(
+        max_length=100,
+        verbose_name='Ключ характеристики'
+    )
+    feature_name = models.CharField(
+        max_length=255,
+        verbose_name='Наименование хаарктеристики'
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name='Категория',
+        on_delete=models.CASCADE,
+    )
+    postfix_for_value = models.CharField(
+        max_length='20',
+        null=True,
+        blank=True,
+        verbose_name='Постфикс для значения',
+        help_text='7 часов работы -> 1 час работы -> 2 часа работы'
+    )
+    use_in_filter = models.BooleanField(
+        default=False,
+        verbose_name='Использовать фильтрацию товаров в шаблоне',
+    )
+    filter_type = models.CharField(
+        max_length=20,
+        verbose_name='Тип фильтра',
+        default=CHECKBOX,
+        choices=FILTER_TYPE_CHOICES,
+    )
+    filter_measure = models.CharField(
+        max_length=50,
+        verbose_name='Единица измерения для фильра',
+        help_text='Единица измерения для конкретного фильтра -> "5" часов'
+    )
+
+    def __str__(self):
+        return f'Категория - "{self.category.name}"' \
+               f'| Характеристика - "{self.feature_name}" '
+
+
+class ProductFeatureValidators(models.Model):
+    category = models.ForeignKey(
+        Category,
+        verbose_name='Категория',
+        on_delete=models.CASCADE,
+    )
+    feature = models.ForeignKey(
+        ProductFeatures,
+        verbose_name='Характеристика',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    feature_value = models.CharField(
+        max_length=255,
+        unique=True,
+        null=True,
+        blank=True,
+        verbose_name='Значения характеристики',
+    )
+
+    def __str__(self):
+        if not self.feature:
+            return f'Валидатор категории "{self.category.name}" - ' \
+                   f'характеристика не выбрана '
+        return f'Валидатор категории "{self.category.name}" | ' \
+               f'Характеристика - "{self.feature.feature_name}" | ' \
+               f'Значения - "{self.feature_value}"'
 
 
 class CartProduct(models.Model):
@@ -145,7 +232,6 @@ class Customer(models.Model):
 
 
 class Order(models.Model):
-
     STATUS_NEW = 'new'
     STATUS_IN_PROGRESS = 'in_progress'
     STATUS_READY = 'is_ready'
