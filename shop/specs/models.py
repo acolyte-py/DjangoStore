@@ -1,11 +1,9 @@
 from django.db import models
 
-from ..mainapp.models import Category, Product
-
 
 class CategoryFeature(models.Model):
     category = models.ForeignKey(
-        Category,
+        'mainapp.Category',
         verbose_name='Категория',
         on_delete=models.CASCADE,
     )
@@ -33,7 +31,7 @@ class CategoryFeature(models.Model):
 
 class FeatureValidator(models.Model):
     category = models.ForeignKey(
-        Category,
+        'mainapp.Category',
         verbose_name='Категория',
         on_delete=models.CASCADE,
     )
@@ -55,7 +53,7 @@ class FeatureValidator(models.Model):
 
 class ProductFeatures(models.Model):
     product = models.ForeignKey(
-        Product,
+        'mainapp.Product',
         verbose_name='Товар',
         on_delete=models.CASCADE,
     )
